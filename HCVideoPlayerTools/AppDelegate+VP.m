@@ -75,7 +75,7 @@ u_long application_supportedInterfaceOrientationsForWindow(id self, SEL cmd, UIA
     if (g_hasConfigRootVc) {
         return;
     }
-    Class class = [[self vp_KeyWindow].rootViewController class];
+    Class class = [[self vp_rootWindow].rootViewController class];
     SEL method = @selector(preferredInterfaceOrientationForPresentation);
     if (!class_addMethod(class, method, (IMP)preferredInterfaceOrientationForPresentation, "I@:")) {
         SEL method = @selector(preferredInterfaceOrientationForPresentation);
@@ -92,7 +92,7 @@ u_long application_supportedInterfaceOrientationsForWindow(id self, SEL cmd, UIA
     if (rootPresentVc == nil) {
         return;
     }
-    if (rootPresentVc == [self vp_KeyWindow].rootViewController) {
+    if (rootPresentVc == [self vp_rootWindow].rootViewController) {
         return;
     }
     Class class = [rootPresentVc class];
@@ -166,21 +166,15 @@ u_long preferredInterfaceOrientationForPresentation(id self, SEL cmd)
     }
 }
 
-+ (UIWindow *)vp_KeyWindow
++ (UIWindow *)vp_rootWindow
 {
     if (@available(iOS 13.0, *))
     {
         for (UIWindowScene* windowScene in [UIApplication sharedApplication].connectedScenes) {
             if (windowScene.activationState == UISceneActivationStateForegroundActive)
             {
-                for (UIWindow *window in windowScene.windows)
-                {
-                    if (window.isKeyWindow)
-                    {
-                        return window;
-                        break;
-                    }
-                }
+                return windowScene.windows.firstObject;
+                break;
             }
         }
     }
