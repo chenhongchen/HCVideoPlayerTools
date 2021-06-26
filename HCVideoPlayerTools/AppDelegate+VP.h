@@ -13,4 +13,5 @@
 /// 播放时是否使用app的-application:supportedInterfaceOrientationsForWindow:方法（NO为使用app的，YES为使用该框架的）
 + (void)setUseAppRotationMethod:(BOOL)isUse;
 + (void)setUseAppRotationMethod:(BOOL)isUse allowRotationOrientationMask:(UIInterfaceOrientationMask)allowRotationOrientationMask;
++ (UIWindow *)vp_rootWindow;
 @end

@@ -168,21 +168,29 @@ u_long preferredInterfaceOrientationForPresentation(id self, SEL cmd)
 
 + (UIWindow *)vp_rootWindow
 {
-    if (@available(iOS 13.0, *))
-    {
-        for (UIWindowScene* windowScene in [UIApplication sharedApplication].connectedScenes) {
-            if (windowScene.activationState == UISceneActivationStateForegroundActive)
-            {
-                return windowScene.windows.firstObject;
-                break;
+    UIWindow *window;
+    if([[[UIApplication sharedApplication] delegate] window]) {
+        window = [[[UIApplication sharedApplication] delegate] window];
+    }else{
+        if(@available(iOS 13.0, *)) {
+            NSArray *array = [[[UIApplication sharedApplication] connectedScenes] allObjects];
+            UIWindowScene* windowScene = (UIWindowScene*)array.firstObject;
+            //如果是普通App开发，可以使用
+//            SceneDelegate * delegate = (SceneDelegate *)windowScene.delegate;
+//            UIWindow * mainWindow = delegate.window;
+            //由于在sdk开发中，引入不了SceneDelegate的头文件，所以需要用kvc获取宿主app的window.
+            UIWindow* mainWindow = [windowScene valueForKeyPath:@"delegate.window"];
+            if(mainWindow) {
+                window = mainWindow;
+            }else{
+                window = [UIApplication sharedApplication].windows.lastObject;
             }
+        }else{
+            // Fallback on earlier versions
+            window = [UIApplication sharedApplication].keyWindow;
         }
     }
-    else
-    {
-        return [UIApplication sharedApplication].keyWindow;
-    }
-    return nil;
+    return window;
 }
 
 @end
